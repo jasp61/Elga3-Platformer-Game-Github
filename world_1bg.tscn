@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://dn64563g3sihh"]
+
+[ext_resource type="Texture2D" uid="uid://se3y5h0ctgno" path="res://environment/Background/back.png" id="2_gc1ys"]
+
+[sub_resource type="GDScript" id="GDScript_ky2ce"]
+script/source = "extends ParallaxBackground
+
+var scrolling_speed = 100
+
+func _process(delta):
+	scroll_offset.x -= scrolling_speed * delta
+"
+
+[node name="World1BG" type="ParallaxBackground"]
+script = SubResource("GDScript_ky2ce")
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="."]
+motion_mirroring = Vector2(1248, 0)
+
+[node name="Back" type="Sprite2D" parent="ParallaxLayer"]
+position = Vector2(624, 392)
+scale = Vector2(3.25, 3.26667)
+texture = ExtResource("2_gc1ys")
