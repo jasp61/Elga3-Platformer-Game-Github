@@ -1,5 +1,5 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1701990184
+::res://::1701990669
 BG.gd::GDScript::-1::1701801930::0::1::::<>ParallaxBackground<>::
 BG.tscn::PackedScene::81347313444091727::1701868772::0::1::::<><>::uid://se3y5h0ctgno::::res://environment/Background/back.png<>res://BG.gd<>uid://d03hlsnaulmfq::::res://environment/Background/middle.png
 icon.svg::CompressedTexture2D::7003732976092158455::1701787665::1701787671::1::::<><>::
@@ -51,9 +51,9 @@ wooden-house.png::CompressedTexture2D::8986945449413662924::1701797721::17017977
 ::res://GIF Previews/items/::1701797721
 ::res://GIF Previews/opossum/::1701797721
 ::res://GIF Previews/player/::1701797721
-::res://Player/::1701989217
-Player.gd::GDScript::-1::1701989217::0::1::::<>CharacterBody2D<>::
-Player.tscn::PackedScene::9055885347781983136::1701988805::0::1::::<><>::res://Player/Player.gd<>uid://cokckf0eadlo2::::res://spritesheets/player.png<>uid://ckfcosio2x3na::::res://sprites/player/crouch/player-crouch-1.png<>uid://bnswoau6gmyvu::::res://sprites/player/idle/player-idle-1.png<>uid://c2k5qxfnwpn31::::res://sprites/player/crouch/player-crouch-2.png<>uid://rrksxt57ixyn::::res://sprites/player/idle/player-idle-2.png<>uid://botk7f7ulesvl::::res://sprites/player/idle/player-idle-3.png<>uid://b23rewibnmuc8::::res://sprites/player/idle/player-idle-4.png<>uid://hswdy4obhibd::::res://sprites/player/jump/player-jump-1.png<>uid://binhkdkgkmo1a::::res://sprites/player/jump/player-jump-2.png<>uid://cuidngygacnfm::::res://sprites/player/run/player-run-1.png<>uid://cq86inufnyav::::res://sprites/player/run/player-run-2.png<>uid://fobcwhojhq0m::::res://sprites/player/run/player-run-3.png<>uid://djgy55so2tv6a::::res://sprites/player/run/player-run-4.png<>uid://bkvjxqda55f6d::::res://sprites/player/run/player-run-5.png<>uid://cc6qspjn3nctl::::res://sprites/player/run/player-run-6.png
+::res://Player/::1701990214
+Player.gd::GDScript::-1::1701990214::0::1::::<>CharacterBody2D<>::
+Player.tscn::PackedScene::9055885347781983136::1701990214::0::1::::<><>::res://Player/Player.gd<>uid://cokckf0eadlo2::::res://spritesheets/player.png<>uid://ckfcosio2x3na::::res://sprites/player/crouch/player-crouch-1.png<>uid://bnswoau6gmyvu::::res://sprites/player/idle/player-idle-1.png<>uid://c2k5qxfnwpn31::::res://sprites/player/crouch/player-crouch-2.png<>uid://rrksxt57ixyn::::res://sprites/player/idle/player-idle-2.png<>uid://botk7f7ulesvl::::res://sprites/player/idle/player-idle-3.png<>uid://b23rewibnmuc8::::res://sprites/player/idle/player-idle-4.png<>uid://hswdy4obhibd::::res://sprites/player/jump/player-jump-1.png<>uid://binhkdkgkmo1a::::res://sprites/player/jump/player-jump-2.png<>uid://cuidngygacnfm::::res://sprites/player/run/player-run-1.png<>uid://cq86inufnyav::::res://sprites/player/run/player-run-2.png<>uid://fobcwhojhq0m::::res://sprites/player/run/player-run-3.png<>uid://djgy55so2tv6a::::res://sprites/player/run/player-run-4.png<>uid://bkvjxqda55f6d::::res://sprites/player/run/player-run-5.png<>uid://cc6qspjn3nctl::::res://sprites/player/run/player-run-6.png
 ::res://PSD/::1701797721
 ::res://PSD/environment/::1701797721
 ::res://PSD/MISC/::1701797721

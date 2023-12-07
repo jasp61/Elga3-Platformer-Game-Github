@@ -342,7 +342,6 @@ func basic_movement_with_smoothing():
 # This function runs 60 timer per second, calls (all of) the other functions
 func _physics_process(delta):
 	
-	
 	# Update the dash timer
 	update_dash_timer(delta)
 	
