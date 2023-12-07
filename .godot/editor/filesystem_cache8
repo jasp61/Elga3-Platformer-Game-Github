@@ -1,10 +1,10 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1701991153
+::res://::1701991335
 BG.gd::GDScript::-1::1701801930::0::1::::<>ParallaxBackground<>::
 BG.tscn::PackedScene::81347313444091727::1701868772::0::1::::<><>::uid://se3y5h0ctgno::::res://environment/Background/back.png<>res://BG.gd<>uid://d03hlsnaulmfq::::res://environment/Background/middle.png
 icon.svg::CompressedTexture2D::7003732976092158455::1701787665::1701990815::1::::<><>::
 main.gd::GDScript::-1::1701789272::0::1::::<>Node2D<>::
-main.tscn::PackedScene::2181794416487069056::1701990988::0::1::::<><>::res://main.gd<>uid://bfn1p17olx3d::::res://BG.tscn
+main.tscn::PackedScene::2181794416487069056::1701991172::0::1::::<><>::res://main.gd<>uid://bfn1p17olx3d::::res://BG.tscn
 world.tscn::PackedScene::2136540734973555368::1701989568::0::1::::<><>::uid://d2a0dxsjq25my::::res://Player/Player.tscn<>uid://dc0757c7toavc::::res://environment/tileset.png<>uid://dn64563g3sihh::::res://world_1bg.tscn<>uid://cokxgyb55d82o::::res://environment/Background/props.png
 world_1bg.tscn::PackedScene::8137528767146076581::1701868772::0::1::::<><>::uid://se3y5h0ctgno::::res://environment/Background/back.png
 ::res://Aseprite/::1701797721
