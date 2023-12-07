@@ -298,11 +298,6 @@ func enable_dash():
 	
 	
 	
-	
-	
-	
-	
-	
 	#Handle the rest of the dash
 	if Dashed and dashTimer <= 0.25:
 		SPEED = WALKING_SPEED if !Input.is_action_pressed("ShiftRun") else RUNNING_SPEED
@@ -311,10 +306,6 @@ func enable_dash():
 			Dashed = false
 			if is_on_floor():
 				has_dashed = false
-	
-	
-	
-	
 	
 	
 	
