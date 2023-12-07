@@ -106,35 +106,6 @@ func jump():
 			velocity.y += 150
 
 
-# Update the timer that determines when the dash should end
-func update_dash_timer(delta):
-	dashTimer -= delta
-
-
-# Check which direction the player is facing
-func get_player_direction():
-	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") 
-
-
-# Should the player start running? (WHY ARE YOU RUNNING, WHY ARE YOU RUNNING???)
-func start_running():
-	if Input.is_action_just_pressed("ShiftRun") and !crouching: #Hold shift to run
-		SPEED = RUNNING_SPEED	
-
-
-# Should the player stop running?
-func stop_running():
-	if Input.is_action_just_released("ShiftRun"): #Release shift to stop running
-		SPEED = WALKING_SPEED
-
-
-# Is the player currently falling? If yes: play "Fall" animation
-func is_falling():
-	if velocity.y > 0:
-		if not crouching and !nextToWall():
-			anim.play("Fall")
-
-
 # Enables gravity
 func enable_gravity(delta):
 	if not is_on_floor():
@@ -157,12 +128,11 @@ func enable_gravity(delta):
 
 # Reset dash ability and coyote time when the player is on the floor
 func reset_dash_and_coyote_time():
-	if is_on_floor() or nextToWall():
-		if (SPEED == WALKING_SPEED) or (SPEED == RUNNING_SPEED and !Dashed):
-			has_dashed = false
-		if !Dashed:
-			coyote_counter = coyote_time
-		jumpNumber = 2
+	if (SPEED == WALKING_SPEED) or (SPEED == RUNNING_SPEED and !Dashed):
+		has_dashed = false
+	if !Dashed:
+		coyote_counter = coyote_time
+	jumpNumber = 2
 
 
 # The crouch ability
@@ -236,24 +206,29 @@ func basic_movement_with_smoothing():
 
 # This function runs 60 timer per second, calls (all of) the other functions
 func _physics_process(delta):
-	# Update the dash timer
-	update_dash_timer(delta)
+	# Update the dash time
+	dashTimer -= delta
 	# Get player direction
-	get_player_direction()
+	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") 
 	# Reset has_dashed when on the floor and reset coyote time
-	reset_dash_and_coyote_time()
+	if is_on_floor() or nextToWall():
+		reset_dash_and_coyote_time()
 	# Add the gravity.
 	enable_gravity(delta)
 	# Is the player falling?
-	is_falling()			
+	if velocity.y > 0:
+		if not crouching and !nextToWall():
+			anim.play("Fall")
 	# Handle jump.
 	jump()
 	# Wall Sliding		
 	wallSlide()
 	# Should the player start running?
-	start_running()	
+	if Input.is_action_just_pressed("ShiftRun") and !crouching: #Hold shift to run
+		SPEED = RUNNING_SPEED	
 	# Should the player stop running?
-	stop_running()
+	if Input.is_action_just_released("ShiftRun"): #Release shift to stop running
+		SPEED = WALKING_SPEED
 	# Crouching
 	enable_crouch()
 	# Handle dash	
@@ -263,3 +238,5 @@ func _physics_process(delta):
 	# Makes sure the player stays within the maximum allowed speed
 	velocity.x = clamp(velocity.x, -MAX_SPEED, MAX_SPEED)
 	move_and_slide()
+
+# Should the player start running? (WHY ARE YOU RUNNING, WHY ARE YOU RUNNING???)
