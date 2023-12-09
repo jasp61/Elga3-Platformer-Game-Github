@@ -97,13 +97,13 @@ func handle_jump():
 		
 		# Wall Jump from wall on the player's right side	
 		if next_to_right_wall(): # Wall Jumping
-			velocity.x = lerp(velocity.x, (velocity.x + wall_jump), 0.6)
+			velocity.x = lerp(velocity.x, (velocity.x + wall_jump), 1.0)
 			velocity.y -= jump_wall
 			animsprite.flip_h = true
 		
 		# Wall Jump from wall on the player's left side
 		if next_to_left_wall():
-			velocity.x = lerp(velocity.x, (velocity.x - wall_jump), 0.6)
+			velocity.x = lerp(velocity.x, (velocity.x - wall_jump), 1.0)
 			velocity.y -= jump_wall
 			animsprite.flip_h = false
 	
@@ -124,6 +124,8 @@ func handle_animation():
 		anim.play("Crouch")
 	elif velocity.y > 0 and !next_to_wall():
 			anim.play("Fall")
+	elif velocity.y > 0 and next_to_wall():
+		anim.play("Fall") #TODO: make wall sliding animations
 	elif direction and (direction[1] == 0):
 		if velocity.y == 0: #If the player is not jumping or falling
 			anim.play("Run")
@@ -137,10 +139,8 @@ func handle_wall_slide():
 		velocity.y = wall_slide_speed
 		if next_to_right_wall():
 			animsprite.flip_h = true
-			anim.play("Fall") #TODO: make wall sliding animations
 		if next_to_left_wall():
 			animsprite.flip_h = false
-			anim.play("Fall") #TODO: make wall sliding animations
 
 
 func handle_falling(delta):

@@ -1,28 +1,24 @@
-[gd_scene load_steps=3 format=3 uid="uid://6c43ntwtov5q"]
+[gd_scene load_steps=4 format=3 uid="uid://6c43ntwtov5q"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_wxt5y"]
 [ext_resource type="PackedScene" uid="uid://bfn1p17olx3d" path="res://BG.tscn" id="2_cp8kl"]
+[ext_resource type="PackedScene" uid="uid://c2h5w5p3amsfr" path="res://main_menu.tscn" id="3_l8qv0"]
+[ext_resource type="PackedScene" uid="uid://cfy8bdl2pbgwq" path="res://level_selector.tscn" id="4_ue5o6"]
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_wxt5y")
-
-[node name="Play" type="Button" parent="."]
-offset_left = 500.0
-offset_top = 218.0
-offset_right = 706.0
-offset_bottom = 310.0
-tooltip_text = "Are you ready?"
-text = "Play"
-
-[node name="Quit" type="Button" parent="."]
-offset_left = 500.0
-offset_top = 316.0
-offset_right = 706.0
-offset_bottom = 408.0
-tooltip_text = "Quits the game"
-text = "Quit"
 
 [node name="BG" parent="." instance=ExtResource("2_cp8kl")]
 
-[connection signal="pressed" from="Play" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]
+[node name="Menu" parent="." instance=ExtResource("3_l8qv0")]
+offset_left = -166.0
+offset_top = -65.0
+offset_right = -166.0
+offset_bottom = -65.0
+scale = Vector2(1.40474, 1.40474)
+
+[node name="level_selector" parent="." instance=ExtResource("4_ue5o6")]
+visible = false
+offset_left = -158.0
+offset_top = -61.0
+offset_right = -158.0
+offset_bottom = -61.0
+scale = Vector2(1.38843, 1.38843)

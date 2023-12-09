@@ -1,0 +1,80 @@
+[gd_scene load_steps=6 format=3 uid="uid://c2h5w5p3amsfr"]
+
+[ext_resource type="Texture2D" uid="uid://txv73om6n48j" path="res://UI/Buttons/LevelSelectDefault.png" id="1_1uwnd"]
+[ext_resource type="Script" path="res://main_menu.gd" id="1_o3mvh"]
+[ext_resource type="Texture2D" uid="uid://dufr004l2qhy7" path="res://UI/Buttons/LevelSelectClick.png" id="2_xg0hn"]
+[ext_resource type="Texture2D" uid="uid://enxgeg6h4nkk" path="res://UI/Buttons/LevelSelectHover.png" id="3_j5v7h"]
+[ext_resource type="FontFile" uid="uid://clgc750mwnfeu" path="res://UI/Fonts/AGENCYB.TTF" id="5_dosll"]
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_o3mvh")
+
+[node name="main_menu_buttons" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_left = 432.0
+offset_top = 186.0
+offset_right = 895.0
+offset_bottom = 746.0
+scale = Vector2(0.280371, 0.280371)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="main_menu_buttons"]
+layout_mode = 2
+
+[node name="Play" type="TextureButton" parent="main_menu_buttons/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_1uwnd")
+texture_pressed = ExtResource("2_xg0hn")
+texture_hover = ExtResource("3_j5v7h")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="main_menu_buttons/VBoxContainer/Play"]
+layout_mode = 0
+offset_left = 171.202
+offset_top = 46.3672
+offset_right = 275.202
+offset_bottom = 134.367
+theme_override_fonts/font = ExtResource("5_dosll")
+theme_override_font_sizes/font_size = 73
+text = "Play"
+
+[node name="Settings" type="TextureButton" parent="main_menu_buttons/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_1uwnd")
+texture_pressed = ExtResource("2_xg0hn")
+texture_hover = ExtResource("3_j5v7h")
+
+[node name="Label2" type="Label" parent="main_menu_buttons/VBoxContainer/Settings"]
+layout_mode = 0
+offset_left = 139.101
+offset_top = 43.8359
+offset_right = 343.101
+offset_bottom = 131.836
+theme_override_fonts/font = ExtResource("5_dosll")
+theme_override_font_sizes/font_size = 73
+text = "Settings"
+
+[node name="Quit" type="TextureButton" parent="main_menu_buttons/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_1uwnd")
+texture_pressed = ExtResource("2_xg0hn")
+texture_hover = ExtResource("3_j5v7h")
+
+[node name="Label3" type="Label" parent="main_menu_buttons/VBoxContainer/Quit"]
+layout_mode = 0
+offset_left = 181.902
+offset_top = 44.8713
+offset_right = 385.902
+offset_bottom = 132.871
+theme_override_fonts/font = ExtResource("5_dosll")
+theme_override_font_sizes/font_size = 73
+text = "Quit"
+
+[connection signal="pressed" from="main_menu_buttons/VBoxContainer/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="main_menu_buttons/VBoxContainer/Settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="main_menu_buttons/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
