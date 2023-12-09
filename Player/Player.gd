@@ -21,21 +21,19 @@ var hasJumped = false
 var DoubleJumpIntensity = 0.85  # Change this variable to jump higher on the second jump
 
 # Wall Jumping
-var jumpNumber = 2
 var wallJump = -800.0
 var jumpWall = 60
 
 # Wall Sliding
 var wallSlideSpeed = 120.0
 
-# Dash Ability
 var Dashed = false
-var has_dashed = false
 var dashTimer = -0.1  # seconds between each key press for a dash ability to take activated
 
 # Crouching
 var crouching = false
-
+	
+	
 # Gravity
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -45,6 +43,7 @@ var lastdirection : Vector2  # Used for determining whether the idle animation s
 
 @onready var anim = get_node("AnimationPlayer")
 @onready var animsprite = get_node("AnimatedSprite2D")
+
 
 # Is the player next to a wall?
 func nextToWall():
@@ -60,9 +59,76 @@ func nextToRightWall():
 func nextToLeftWall():
 	return $LeftWall.is_colliding()
 
+func handle_crouch():
+	if Input.is_action_pressed("CrouchControl"):
+		crouching = true
+		SPEED = 0.0
+	else:
+		crouching = false
 
-# Wall Sliding
-func wallSlide():
+func handle_dash():
+	if Input.is_action_just_pressed("ui_dash") and !Dashed and !crouching:
+			if Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right"):
+				Dashed = true
+				dashTimer = 0.25
+				
+	if Dashed:
+		if dashTimer > 0:
+			SPEED = DASH_SPEED
+		else:
+			Dashed = !is_on_floor()
+
+func handle_jump():
+	if Input.is_action_just_pressed("ui_accept"):
+		jump_buffer_counter = jump_buffer_time
+	
+	if jump_buffer_counter > 0:
+		jump_buffer_counter -= 1
+	
+	if jump_buffer_counter > 0:
+		if coyote_counter > 0 or Dashed and !hasJumped or nextToRightWall() or nextToLeftWall():
+			hasJumped = true
+			velocity.y = JUMP_VELOCITY
+			jump_buffer_counter = 0
+			coyote_counter = 0
+			anim.play("Jump")
+		
+		# Wall Jump from wall on the player's right side	
+		if nextToRightWall(): # Wall Jumping
+			velocity.x = lerp(velocity.x, (velocity.x + wallJump), 0.6)
+			velocity.y -= jumpWall
+			animsprite.flip_h = true
+		
+		# Wall Jump from wall on the player's left side
+		if nextToLeftWall():
+			velocity.x = lerp(velocity.x, (velocity.x - wallJump), 0.6)
+			velocity.y -= jumpWall
+			animsprite.flip_h = false
+	
+	# Different jump heights based on how long you hold the space bar
+	if Input.is_action_just_released("ui_accept"):
+		if velocity.y < 0:
+			velocity.y += 150
+			
+func handle_animation():
+	if lastdirection[0] == 1:
+		get_node("AnimatedSprite2D").flip_h = false
+	elif lastdirection[0] == -1:
+		get_node("AnimatedSprite2D").flip_h = true
+	lastdirection = direction
+	
+	if crouching:
+		anim.play("Crouch")
+	elif velocity.y > 0 and !nextToWall():
+			anim.play("Fall")
+	elif direction and (direction[1] == 0):
+		if velocity.y == 0: #If the player is not jumping or falling
+			anim.play("Run")
+	else:
+		velocity.x = lerp(velocity.x, 0.0, 0.2)
+		anim.play("Idle")
+		
+func handle_wall_slide():	
 	if nextToWall() and velocity.y > 0:
 		velocity.y = wallSlideSpeed
 		if nextToRightWall():
@@ -71,172 +137,46 @@ func wallSlide():
 		if nextToLeftWall():
 			animsprite.flip_h = false
 			anim.play("Fall") #TODO: make wall sliding animations
-
-
-# Jump Function
-func jump():
-	if Input.is_action_just_pressed("ui_accept"):
-		jump_buffer_counter = jump_buffer_time
+			
+func handle_falling(delta):
+	if is_on_floor():
+		coyote_counter = coyote_time
+		hasJumped = false
 	
-	if jump_buffer_counter > 0:
-		jump_buffer_counter -= 1
-	
-	if jump_buffer_counter > 0 and (coyote_counter > 0) and !crouching and jumpNumber > 0:
-		jumpNumber = 0
-		velocity.y = JUMP_VELOCITY
-		jump_buffer_counter = 0
-		coyote_counter = 0
-		anim.play("Jump")
-		
-		# Wall Jump from wall on the player's right side	
-		if not is_on_floor() and nextToRightWall(): # Wall Jumping
-			velocity.x = lerp(velocity.x, (velocity.x + wallJump), 0.6)
-			velocity.y -= jumpWall
-			animsprite.flip_h = true
-		
-		# Wall Jump from wall on the player's left side
-		if not is_on_floor() and nextToLeftWall():
-			velocity.x = lerp(velocity.x, (velocity.x - wallJump), 0.6)
-			velocity.y -= jumpWall
-			animsprite.flip_h = false
-	
-	# Different jump heights based on how long you hold the space bar
-	if Input.is_action_just_released("ui_accept") and !crouching:
-		if velocity.y < 0:
-			velocity.y += 150
-
-
-# Enables gravity
-func enable_gravity(delta):
-	if not is_on_floor():
+	else:
 		if coyote_counter > 0:
 			coyote_counter -= 1
-				
-		#	if jump_counter < 1 and not nextToWall(): THIS HAS TO DO WITH DOUBLE JUMPING
-		#		coyote_counter = 1
-		#		jump_counter += 1
-		#		if jump_counter == 1:
-		#			hasJumped = true
-		#			if has_dashed == 0:
-		#				has_dashed = 1
-		
-		if not Dashed:
-			velocity.y += gravity * delta
-		elif Dashed:
+
+		if dashTimer > 0:
 			velocity.y = 0
-
-
-# Reset dash ability and coyote time when the player is on the floor
-func reset_dash_and_coyote_time():
-	if (SPEED == WALKING_SPEED) or (SPEED == RUNNING_SPEED and !Dashed):
-		has_dashed = false
-	if !Dashed:
-		coyote_counter = coyote_time
-	jumpNumber = 2
-
-
-# The crouch ability
-func enable_crouch():
-	if Input.is_action_just_pressed("CrouchControl"):
-		anim.play("Crouch")
-		crouching = true
-		SPEED = 0.0
-	
-	if Input.is_action_just_released("CrouchControl"):
-		crouching = false
-		SPEED = WALKING_SPEED
-	
-	# Get the input direction and handle the movement/deceleration.
-	if direction[0] == -1:
-		get_node("AnimatedSprite2D").flip_h = true
-		lastdirection = direction
-	elif direction[0] == 1:
-		get_node("AnimatedSprite2D").flip_h = false
-		lastdirection = direction	
-
-
-# The Dash ability
-func enable_dash():
-# Check for dashing input
-	if Input.is_action_just_pressed("ui_dash") and !Dashed and !crouching:
-		if !has_dashed:
-			if Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right"):
-				Dashed = true
-				has_dashed = true
-				SPEED = DASH_SPEED
-				dashTimer = 0.5
-
-	
-	#Handle the rest of the dash
-	if Dashed and dashTimer <= 0.25:
-		SPEED = WALKING_SPEED if !Input.is_action_pressed("ShiftRun") else RUNNING_SPEED
-		coyote_counter = coyote_time
-		if !(SPEED >= DASH_SPEED):
-			Dashed = false
-			if is_on_floor():
-				has_dashed = false
-
-	
-	# Handle early exit from dash
-	if Input.is_action_pressed("ui_dash") and Dashed and dashTimer <= 0.25:
-		SPEED = WALKING_SPEED if !Input.is_action_pressed("ShiftRun") else RUNNING_SPEED
-		if !(SPEED >= DASH_SPEED):
-			Dashed = false
-			if is_on_floor():
-				has_dashed = false	
-
-
-# Basic player movement with smoothing enabled by using the lerp() function
-func basic_movement_with_smoothing():
-	if direction and (direction[1] == 0):
-		velocity.x = lerp(velocity[0], (direction[0] * SPEED), 0.1) # Movement smoothing
-		if velocity.y == 0: #If the player is not jumping or falling
-			if not crouching:
-				anim.play("Run")
-	else:
-		velocity.x = lerp(velocity.x, 0.0, 0.2)
-		if velocity.y == 0: #If the player is not jumping or falling
-			if not crouching:
-				anim.play("Idle")
-			if lastdirection[0] == 1:
-				get_node("AnimatedSprite2D").flip_h = false
-			elif lastdirection[0] == -1:
-				get_node("AnimatedSprite2D").flip_h = true	
-
+		else:
+			velocity.y += gravity * delta
 
 # This function runs 60 timer per second, calls (all of) the other functions
 func _physics_process(delta):
-	# Update the dash time
-	dashTimer -= delta
 	# Get player direction
 	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") 
 	# Reset has_dashed when on the floor and reset coyote time
-	if is_on_floor() or nextToWall():
-		reset_dash_and_coyote_time()
-	# Add the gravity.
-	enable_gravity(delta)
-	# Is the player falling?
-	if velocity.y > 0:
-		if not crouching and !nextToWall():
-			anim.play("Fall")
-	# Handle jump.
-	jump()
-	# Wall Sliding		
-	wallSlide()
+	if dashTimer > 0:
+		dashTimer -= delta
+	
+	handle_falling(delta)
+	
+	handle_jump()
+	
+	handle_wall_slide()
+	
 	# Should the player start running?
-	if Input.is_action_just_pressed("ShiftRun") and !crouching: #Hold shift to run
-		SPEED = RUNNING_SPEED	
-	# Should the player stop running?
-	if Input.is_action_just_released("ShiftRun"): #Release shift to stop running
-		SPEED = WALKING_SPEED
-	# Crouching
-	enable_crouch()
-	# Handle dash	
-	enable_dash()
-	# Handle basic player movement
-	basic_movement_with_smoothing()
+	if not crouching:
+		SPEED = WALKING_SPEED if !Input.is_action_pressed("ShiftRun") else RUNNING_SPEED
+	
+	handle_dash()
+	
+	handle_crouch()
+	
+	handle_animation()
+	
 	# Makes sure the player stays within the maximum allowed speed
+	velocity.x = lerp(velocity[0], (direction[0] * SPEED), 0.1) # Movement smoothing
 	velocity.x = clamp(velocity.x, -MAX_SPEED, MAX_SPEED)
 	move_and_slide()
-
-# Should the player start running? (WHY ARE YOU RUNNING, WHY ARE YOU RUNNING???)
