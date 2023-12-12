@@ -1,34 +1,46 @@
 extends CharacterBody2D
 
+var player = self
+
 # Walking and Running Speed
 const MAX_SPEED = 1200.0
-var WALKING_SPEED = 150.0
-var RUNNING_SPEED = 300.0
-var SPEED = 150.0  # Default speed, can be modified by dash or other abilities
-var DASH_SPEED = 600.0  # Speed for the dash ability
+@export var WALKING_SPEED = 150.0
+@export var RUNNING_SPEED = 300.0
+@export var SPEED = 150.0  # Default speed, can be modified by dash or other abilities
+@export var DASH_SPEED = 600.0  # Speed for the dash ability
+@onready var footstep_particle = $FootstepParticle
 
 # Jumping
-var JUMP_VELOCITY = -400.0
-var jump_buffer_time = 15
+@export var JUMP_VELOCITY = -400.0
+@export var jump_buffer_time = 15
 var jump_buffer_counter = 0
-var coyote_time = 15
+@export var coyote_time = 15
 var coyote_counter = 0
 #var jump_counter = 0
 var max_fall_speed = 2000.0
+var on_ground = true
+@onready var landing_burst = $LandingBurst
 
 # Double Jump
 var has_jumped = false
 var double_jump_intensity = 0.85  # Change this variable to jump higher on the second jump
 
 # Wall Jumping
-var wall_jump = -800.0
-var jump_wall = 60
+@export var wall_jump = -800.0
+@export var jump_wall = 60
 
 # Wall Sliding
-var wall_slide_speed = 120.0
+@export var wall_slide_speed = 120.0
 
+# Dashing
 var dashed = false
 var dash_timer = -0.1  # seconds between each key press for a dash ability to take activated
+var dash_direction = Vector2.ZERO
+var ghost_scene = preload("res://dash_ghost.tscn")
+@onready var ghost_timer = $GhostTimer
+@export var ghost_node : PackedScene
+@onready var dust_trail = $DustTrail
+@onready var dust_burst = $DustBurst
 
 # Crouching
 var crouching = false
@@ -42,6 +54,37 @@ var lastdirection : Vector2  # Used for determining whether the idle animation s
 
 @onready var anim = get_node("AnimationPlayer")
 @onready var animsprite = get_node("AnimatedSprite2D")
+@onready var shader_material: ShaderMaterial = animsprite.material
+
+
+func spawn_footstep_particle():
+	if animsprite.animation == "Run":
+		if direction.x != 0 and is_on_floor() and !next_to_wall():
+			if !footstep_particle.emitting:
+				footstep_particle.restart()
+				footstep_particle.emitting = true
+	
+	if is_on_floor():
+		if not on_ground:
+			#dust_burst.rotation = (direction * -1).angle()
+			landing_burst.restart()
+			landing_burst.emitting = true
+			on_ground = true
+
+
+# Dash Ghosts
+func instance_ghost():
+	var ghost = ghost_node.instantiate()
+	var animation_name = animsprite.animation
+	var animation_frame = animsprite.frame
+	var animation_texture = animsprite.sprite_frames.get_frame_texture(animation_name, animation_frame)
+	ghost.set_property(position, animsprite.scale, animation_texture, animsprite.flip_h)
+	get_tree().current_scene.add_child(ghost)
+
+
+# When the ghost timer runs out, create a new dash ghost
+func _on_ghost_timer_timeout():
+	instance_ghost()
 
 
 # Is the player next to a wall?
@@ -67,17 +110,69 @@ func handle_crouch():
 		crouching = false
 
 
+# 8-directional dash movement
+func get_dash_direction():
+	if !dashed:
+		var input_vector = Vector2.ZERO
+		input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
+		input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+		input_vector = input_vector.normalized()
+		return input_vector
+	return Vector2.ZERO
+
+
+# 8-directional dashing
 func handle_dash():
 	if Input.is_action_just_pressed("ui_dash") and !dashed and !crouching:
-			if Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right"):
-				dashed = true
+		dash_direction = get_dash_direction()
+		if dash_direction != Vector2.ZERO:  # Check if there's a valid dash direction
+			dashed = true
+			
+			# Start creating dash ghosts by starting the ghost_timer.
+			ghost_timer.start()
+			shader_material.set_shader_parameter("mix_weight", 0.7)
+			shader_material.set_shader_parameter("whiten", true)
+			
+			# Enable dash particle effect
+			dust_trail.restart()
+			dust_trail.emitting = true
+			dust_burst.rotation = (direction * -1).angle()
+			dust_burst.restart()
+			dust_burst.emitting = true
+			
+			# Different dash durations depending on the direction of the dash
+			if dash_direction[1] == 0:
 				dash_timer = 0.25
-				
+				print("horizontal dash")
+			elif dash_direction[1] == -1 or dash_direction[1] == 1:
+				dash_timer = 0.01
+				print("vertical dash")
+			elif is_equal_approx(abs(direction[1]), 0.70710676908493):
+				dash_timer = 0.15
+				print("diagonal dash")	
+
 	if dashed:
 		if dash_timer > 0:
 			SPEED = DASH_SPEED
+			# Set player's velocity based on the dash direction
+			velocity = dash_direction * SPEED
 		else:
 			dashed = !is_on_floor()
+			ghost_timer.stop()
+			shader_material.set_shader_parameter("whiten", false)
+
+# 2-directional dashing (regular dashing)
+#func handle_dash():
+	#dash_direction = Vector2.ZERO
+	#if Input.is_action_just_pressed("ui_dash") and !dashed and !crouching:
+			#if Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right"):
+				#dashed = true
+				#dash_timer = 0.25
+	#if dashed:
+		#if dash_timer > 0:
+			#SPEED = DASH_SPEED
+		#else:
+			#dashed = !is_on_floor()
 
 
 func handle_jump():
@@ -149,6 +244,7 @@ func handle_falling(delta):
 		has_jumped = false
 	
 	else:
+		on_ground = false
 		if coyote_counter > 0:
 			coyote_counter -= 1
 
@@ -160,7 +256,7 @@ func handle_falling(delta):
 # This function runs 60 timer per second, calls (all of) the other functions
 func _physics_process(delta):
 	# Get player direction
-	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down") 
+	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	# Reset has_dashed when on the floor and reset coyote time
 	if dash_timer > 0:
 		dash_timer -= delta
@@ -181,7 +277,11 @@ func _physics_process(delta):
 	
 	handle_animation()
 	
+	spawn_footstep_particle()
+	
 	# Makes sure the player stays within the maximum allowed speed
 	velocity.x = lerp(velocity[0], (direction[0] * SPEED), 0.1) # Movement smoothing
 	velocity.x = clamp(velocity.x, -MAX_SPEED, MAX_SPEED)
+	velocity.y = clamp(velocity.y, -max_fall_speed, max_fall_speed)
 	move_and_slide()
+

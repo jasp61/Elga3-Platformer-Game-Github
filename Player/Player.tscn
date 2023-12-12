@@ -1,8 +1,10 @@
-[gd_scene load_steps=31 format=3 uid="uid://d2a0dxsjq25my"]
+[gd_scene load_steps=41 format=3 uid="uid://d2a0dxsjq25my"]
 
 [ext_resource type="Script" path="res://Player/Player.gd" id="1_apf86"]
 [ext_resource type="Texture2D" uid="uid://cokckf0eadlo2" path="res://spritesheets/player.png" id="2_ccmr7"]
 [ext_resource type="Texture2D" uid="uid://ckfcosio2x3na" path="res://sprites/player/crouch/player-crouch-1.png" id="2_hqd4l"]
+[ext_resource type="PackedScene" uid="uid://cayvjo1pxgbmo" path="res://dash_ghost.tscn" id="2_q805k"]
+[ext_resource type="Material" uid="uid://t3vi36pgtnr3" path="res://whiten_dash_ghost_material.tres" id="3_c151q"]
 [ext_resource type="Texture2D" uid="uid://bnswoau6gmyvu" path="res://sprites/player/idle/player-idle-1.png" id="3_dhalr"]
 [ext_resource type="Texture2D" uid="uid://c2k5qxfnwpn31" path="res://sprites/player/crouch/player-crouch-2.png" id="3_ylbtf"]
 [ext_resource type="Texture2D" uid="uid://rrksxt57ixyn" path="res://sprites/player/idle/player-idle-2.png" id="4_5ioug"]
@@ -17,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://bkvjxqda55f6d" path="res://sprites/player/run/player-run-5.png" id="13_yfyxd"]
 [ext_resource type="Texture2D" uid="uid://cc6qspjn3nctl" path="res://sprites/player/run/player-run-6.png" id="14_pxfor"]
 [ext_resource type="Script" path="res://Player/PlayerCameraScript.gd" id="17_h8pi6"]
+[ext_resource type="Texture2D" uid="uid://deiqjvb8oxvma" path="res://VFX/dust.png" id="20_1gwtv"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_y614d"]
 radius = 5.91501
@@ -280,8 +283,44 @@ _data = {
 "Run": SubResource("Animation_8f30h")
 }
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xpj6p"]
+particles_animation = true
+particles_anim_h_frames = 5
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_lttqg"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Curve" id="Curve_h2rhs"]
+_data = [Vector2(0.0125392, 0), 0.0, 0.0, 0, 0, Vector2(0.749216, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_h15dk"]
+particles_animation = true
+particles_anim_h_frames = 5
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_r1rrf"]
+particles_animation = true
+particles_anim_h_frames = 5
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_g6gwp"]
+particles_animation = true
+particles_anim_h_frames = 5
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_5w7ap"]
+_data = [Vector2(0, 0.716687), 0.0, 0.0, 0, 0, Vector2(0.351097, 0.983811), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_apf86")
+ghost_node = ExtResource("2_q805k")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, 0)
@@ -293,9 +332,10 @@ position = Vector2(-1, 5)
 shape = SubResource("CapsuleShape2D_pw8xd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = ExtResource("3_c151q")
 position = Vector2(-1, -1)
 sprite_frames = SubResource("SpriteFrames_vtc80")
-animation = &"Idle"
+animation = &"Crouch"
 frame = 1
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
@@ -325,5 +365,101 @@ position = Vector2(0, 4)
 rotation = -3.14159
 target_position = Vector2(12, 9.53674e-07)
 
+[node name="GhostTimer" type="Timer" parent="."]
+wait_time = 0.025
+
+[node name="DustTrail" type="CPUParticles2D" parent="."]
+z_index = -1
+material = SubResource("CanvasItemMaterial_xpj6p")
+position = Vector2(0, 15)
+emitting = false
+lifetime = 1.2
+one_shot = true
+explosiveness = 0.8
+lifetime_randomness = 0.7
+texture = ExtResource("20_1gwtv")
+gravity = Vector2(0, 0)
+angle_min = -360.0
+angle_max = 360.0
+scale_amount_min = 0.8
+color_ramp = SubResource("Gradient_lttqg")
+anim_speed_max = 1.0
+anim_speed_curve = SubResource("Curve_h2rhs")
+
+[node name="DustBurst" type="CPUParticles2D" parent="."]
+z_index = -1
+material = SubResource("CanvasItemMaterial_h15dk")
+position = Vector2(0, 4)
+emitting = false
+amount = 14
+lifetime = 1.5
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.7
+texture = ExtResource("20_1gwtv")
+emission_shape = 1
+emission_sphere_radius = 6.0
+spread = 30.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 35.0
+initial_velocity_max = 35.0
+angle_min = -360.0
+angle_max = 360.0
+scale_amount_min = 1.3
+scale_amount_max = 1.3
+color_ramp = SubResource("Gradient_lttqg")
+anim_speed_max = 1.0
+anim_speed_curve = SubResource("Curve_h2rhs")
+
+[node name="LandingBurst" type="CPUParticles2D" parent="."]
+z_index = -1
+material = SubResource("CanvasItemMaterial_r1rrf")
+position = Vector2(0, 15)
+rotation = -1.5708
+emitting = false
+amount = 12
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.7
+texture = ExtResource("20_1gwtv")
+emission_shape = 3
+emission_rect_extents = Vector2(1, 10)
+direction = Vector2(0, 0)
+spread = 90.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 20.0
+initial_velocity_max = 20.0
+color = Color(0.792157, 0.792157, 0.792157, 1)
+color_ramp = SubResource("Gradient_lttqg")
+anim_speed_max = 1.0
+anim_speed_curve = SubResource("Curve_h2rhs")
+
+[node name="FootstepParticle" type="CPUParticles2D" parent="."]
+z_index = -1
+material = SubResource("CanvasItemMaterial_g6gwp")
+position = Vector2(0, 14)
+emitting = false
+amount = 3
+one_shot = true
+explosiveness = 1.0
+lifetime_randomness = 0.7
+texture = ExtResource("20_1gwtv")
+spread = 30.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0
+angular_velocity_max = 80.0
+angle_min = -360.0
+angle_max = 360.0
+scale_amount_min = 1.5
+scale_amount_max = 1.5
+scale_amount_curve = SubResource("Curve_5w7ap")
+color = Color(0.792157, 0.792157, 0.792157, 1)
+color_ramp = SubResource("Gradient_lttqg")
+anim_speed_max = 1.0
+anim_speed_curve = SubResource("Curve_h2rhs")
+
 [connection signal="ready" from="." to="PlayerCamera" method="_on_player_ready"]
 [connection signal="frame_changed" from="AnimatedSprite2D" to="PlayerCamera" method="_on_animated_sprite_2d_frame_changed"]
+[connection signal="timeout" from="GhostTimer" to="." method="_on_ghost_timer_timeout"]
