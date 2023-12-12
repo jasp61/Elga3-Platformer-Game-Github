@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://b4lejrah20l1j"]
+
+[ext_resource type="Texture2D" uid="uid://deiqjvb8oxvma" path="res://VFX/dust.png" id="1_ycvmn"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rv3ky"]
+particles_animation = true
+particles_anim_h_frames = 5
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_3jd2r"]
+_data = [Vector2(0, 0.740971), 0.0, 0.0, 0, 0, Vector2(0.388715, 1), 0.0, 0.0, 0, 0, Vector2(0.9279, 0.0124533), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_4f32n"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Curve" id="Curve_5dwas"]
+_data = [Vector2(0.0125392, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="FootstepParticle" type="CPUParticles2D"]
+z_index = -1
+material = SubResource("CanvasItemMaterial_rv3ky")
+position = Vector2(0, 15)
+emitting = false
+amount = 1
+explosiveness = 1.0
+lifetime_randomness = 0.7
+texture = ExtResource("1_ycvmn")
+gravity = Vector2(0, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 10.0
+angular_velocity_max = 80.0
+angle_min = -360.0
+angle_max = 360.0
+scale_amount_min = 0.5
+scale_amount_max = 0.5
+scale_amount_curve = SubResource("Curve_3jd2r")
+color_ramp = SubResource("Gradient_4f32n")
+anim_speed_max = 1.0
+anim_speed_curve = SubResource("Curve_5dwas")

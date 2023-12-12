@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://t3vi36pgtnr3"]
+
+[ext_resource type="Shader" path="res://whiten_dash_ghost.gdshader" id="1_ta1rd"]
+
+[resource]
+shader = ExtResource("1_ta1rd")
+shader_parameter/whiten = false
+shader_parameter/mix_weight = 1.0
