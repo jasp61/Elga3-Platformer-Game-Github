@@ -64,9 +64,9 @@ func spawn_footstep_particle():
 				footstep_particle.restart()
 				footstep_particle.emitting = true
 	
+	# Landing from jump or fall-VFX
 	if is_on_floor():
 		if not on_ground:
-			#dust_burst.rotation = (direction * -1).angle()
 			landing_burst.restart()
 			landing_burst.emitting = true
 			on_ground = true
@@ -80,6 +80,27 @@ func instance_ghost():
 	var animation_texture = animsprite.sprite_frames.get_frame_texture(animation_name, animation_frame)
 	ghost.set_property(position, animsprite.scale, animation_texture, animsprite.flip_h)
 	get_tree().current_scene.add_child(ghost)
+
+
+func start_ghost_timer():
+	# Start creating dash ghosts by starting the ghost_timer.
+	ghost_timer.start()
+	shader_material.set_shader_parameter("mix_weight", 0.7)
+	shader_material.set_shader_parameter("whiten", true)
+
+
+func stop_ghost_timer():
+	ghost_timer.stop()
+	shader_material.set_shader_parameter("whiten", false)
+
+
+func dash_particle_effect():
+	# Enable dash particle effect
+	dust_trail.restart()
+	dust_trail.emitting = true
+	dust_burst.rotation = (direction * -1).angle()
+	dust_burst.restart()
+	dust_burst.emitting = true
 
 
 # When the ghost timer runs out, create a new dash ghost
@@ -128,17 +149,9 @@ func handle_dash():
 		if dash_direction != Vector2.ZERO:  # Check if there's a valid dash direction
 			dashed = true
 			
-			# Start creating dash ghosts by starting the ghost_timer.
-			ghost_timer.start()
-			shader_material.set_shader_parameter("mix_weight", 0.7)
-			shader_material.set_shader_parameter("whiten", true)
+			start_ghost_timer()
 			
-			# Enable dash particle effect
-			dust_trail.restart()
-			dust_trail.emitting = true
-			dust_burst.rotation = (direction * -1).angle()
-			dust_burst.restart()
-			dust_burst.emitting = true
+			dash_particle_effect()
 			
 			# Different dash durations depending on the direction of the dash
 			if dash_direction[1] == 0:
@@ -158,8 +171,8 @@ func handle_dash():
 			velocity = dash_direction * SPEED
 		else:
 			dashed = !is_on_floor()
-			ghost_timer.stop()
-			shader_material.set_shader_parameter("whiten", false)
+			stop_ghost_timer()
+
 
 # 2-directional dashing (regular dashing)
 #func handle_dash():
@@ -209,9 +222,9 @@ func handle_jump():
 
 
 func handle_animation():
-	if lastdirection[0] == 1:
+	if lastdirection[0] == 1 or (next_to_left_wall() and velocity.y == wall_slide_speed):
 		get_node("AnimatedSprite2D").flip_h = false
-	elif lastdirection[0] == -1:
+	elif lastdirection[0] == -1 or (next_to_right_wall() and velocity.y == wall_slide_speed):
 		get_node("AnimatedSprite2D").flip_h = true
 	lastdirection = direction
 	
@@ -219,7 +232,7 @@ func handle_animation():
 		anim.play("Crouch")
 	elif velocity.y > 0 and !next_to_wall():
 			anim.play("Fall")
-	elif velocity.y > 0 and next_to_wall():
+	elif velocity.y == wall_slide_speed and next_to_wall():
 		anim.play("Fall") #TODO: make wall sliding animations
 	elif direction and (direction[1] == 0):
 		if velocity.y == 0: #If the player is not jumping or falling
@@ -228,14 +241,14 @@ func handle_animation():
 		velocity.x = lerp(velocity.x, 0.0, 0.2)
 		anim.play("Idle")
 
-	
+
 func handle_wall_slide():	
 	if next_to_wall() and velocity.y > 0:
 		velocity.y = wall_slide_speed
-		if next_to_right_wall():
-			animsprite.flip_h = true
-		if next_to_left_wall():
-			animsprite.flip_h = false
+		#if next_to_right_wall():
+			#animsprite.flip_h = true
+		#if next_to_left_wall():
+			#animsprite.flip_h = false
 
 
 func handle_falling(delta):
@@ -283,5 +296,7 @@ func _physics_process(delta):
 	velocity.x = lerp(velocity[0], (direction[0] * SPEED), 0.1) # Movement smoothing
 	velocity.x = clamp(velocity.x, -MAX_SPEED, MAX_SPEED)
 	velocity.y = clamp(velocity.y, -max_fall_speed, max_fall_speed)
-	move_and_slide()
+	
+	if direction[1] == 0 or dashed or !is_on_floor(): # This kinda fixes bug [003] in bugtracker.gd
+		move_and_slide()
 
