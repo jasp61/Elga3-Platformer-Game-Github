@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cayvjo1pxgbmo"]
 
-[ext_resource type="Script" path="res://DashGhost.gd" id="1_h52lr"]
+[ext_resource type="Script" path="res://VFX/DashGhost.gd" id="1_h52lr"]
 
 [sub_resource type="Shader" id="Shader_sbhc3"]
 code = "shader_type canvas_item;

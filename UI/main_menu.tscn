@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://c2h5w5p3amsfr"]
 
 [ext_resource type="Texture2D" uid="uid://txv73om6n48j" path="res://UI/Buttons/LevelSelectDefault.png" id="1_1uwnd"]
-[ext_resource type="Script" path="res://main_menu.gd" id="1_o3mvh"]
+[ext_resource type="Script" path="res://UI/main_menu.gd" id="1_o3mvh"]
 [ext_resource type="Texture2D" uid="uid://dufr004l2qhy7" path="res://UI/Buttons/LevelSelectClick.png" id="2_xg0hn"]
 [ext_resource type="Texture2D" uid="uid://enxgeg6h4nkk" path="res://UI/Buttons/LevelSelectHover.png" id="3_j5v7h"]
 [ext_resource type="FontFile" uid="uid://clgc750mwnfeu" path="res://UI/Fonts/AGENCYB.TTF" id="5_dosll"]

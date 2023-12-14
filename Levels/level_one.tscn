@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://5o7rp5r770t5"]
+[gd_scene load_steps=10 format=3 uid="uid://5o7rp5r770t5"]
 
 [ext_resource type="Texture2D" uid="uid://dc0757c7toavc" path="res://environment/tileset.png" id="1_sgqaa"]
 [ext_resource type="PackedScene" uid="uid://d2a0dxsjq25my" path="res://Player/Player.tscn" id="2_ovjt2"]
 [ext_resource type="Texture2D" uid="uid://cokxgyb55d82o" path="res://environment/Background/props.png" id="3_lokr2"]
-[ext_resource type="PackedScene" uid="uid://dn64563g3sihh" path="res://world_1bg.tscn" id="4_muint"]
+[ext_resource type="PackedScene" uid="uid://dn64563g3sihh" path="res://VFX/world_1bg.tscn" id="4_muint"]
+[ext_resource type="AudioStream" uid="uid://culvrtmqn8y1t" path="res://Music/neon-gaming-128925.mp3" id="5_n71gq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8fdk2"]
 texture = ExtResource("1_sgqaa")
@@ -947,3 +948,7 @@ text = "Jump at box 1.
 Jørgen PB: Box 21"
 
 [node name="World1BG" parent="." instance=ExtResource("4_muint")]
+
+[node name="background_music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_n71gq")
+autoplay = true

@@ -36,7 +36,7 @@ var double_jump_intensity = 0.85  # Change this variable to jump higher on the s
 var dashed = false
 var dash_timer = -0.1  # seconds between each key press for a dash ability to take activated
 var dash_direction = Vector2.ZERO
-var ghost_scene = preload("res://dash_ghost.tscn")
+var ghost_scene = preload("res://VFX/dash_ghost.tscn")
 @onready var ghost_timer = $GhostTimer
 @export var ghost_node : PackedScene
 @onready var dust_trail = $DustTrail
